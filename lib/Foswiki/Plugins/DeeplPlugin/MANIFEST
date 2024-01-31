@@ -1,0 +1,12 @@
+!noci
+data/System/DeeplPlugin.txt 0644
+data/System/DeeplTranslate.txt 0644
+lib/Foswiki/Plugins/DeeplPlugin/Config.spec 0644
+lib/Foswiki/Plugins/DeeplPlugin/Core.pm 0644
+lib/Foswiki/Plugins/DeeplPlugin/DEPENDENCIES 0644
+lib/Foswiki/Plugins/DeeplPlugin/JQUERY.pm 0644
+lib/Foswiki/Plugins/DeeplPlugin.pm 0644
+pub/System/DeeplPlugin/deepl.js 0644
+pub/System/DeeplPlugin/deepl.js.gz 0644
+pub/System/DeeplPlugin/deepl.uncompressed.js 0644
+pub/System/DeeplPlugin/Makefile 0644

@@ -1,0 +1,140 @@
+%META:TOPICINFO{author="ProjectContributor" date="1706703795" format="1.1" version="1"}%
+---+!! %TOPIC%
+%FORMFIELD{"Description"}%
+
+%TOC%
+
+---++ Description
+
+This plugin integrates Deepl into Foswiki as a translation system. That means,
+Deepl's API can be used to translate a text or even a whole topic. To use the
+service, you will need an %RED%API key%ENDCOLOR% and store it in your Foswikis configuration.
+
+Create a user account at https://www.deepl.com/de/signup/. Then copy &amp;
+paste the authentication key of your account into the
+=$Foswiki::cfg{DeeplPlugin}{APIKey}= .
+
+---++ Usage
+
+Translations may either be used directly using the [[DeeplTranslate]] interface.
+In addition translations can be performed using the =%DEEPL= macro. 
+
+Use this to translate "Hello World" into the the user's language:
+
+<verbatim>
+%DEEPL{"Hello World"}%
+</verbatim>
+
+You may explicitly specify a source and target language as in:
+
+<verbatim>
+%DEEPL{"Warte nicht, steig in das Rauschen der Sterne!" 
+  source_lang="de" 
+  target_lang="en"
+}%
+</verbatim>
+
+A larger section of text can be surrounded by =%STARTDEEPL= and =%ENDDEEPL=
+macros as in: 
+
+<verbatim>
+%STARTDEEPL{source_lang="de" target_lang="en"}%
+---++ Vorwort
+Die ISO (Internationale Organisation für Normung ) ist die weltweite Vereinigung nationaler
+Normungsinstitute (ISO-Mitgliedskörperschaften). Die Erarbeitung internationaler Normen obliegt den
+Technischen Komitees der ISO. Jede Mitgliedskörperschaft, die sich für ein Thema interessiert, für das ein
+Technisches Komitee eingesetzt wurde, ist berechtigt, in diesem Komitee mitzuarbeiten. Internationale
+(staatliche und nichtstaatliche) Organisationen, die mit der ISO in Verbindung stehen, sind an den Arbeiten
+ebenfalls beteiligt. Die ISO arbeitet bei allen Angelegenheiten der elektrotechnischen Normung eng mit der
+Internationalen Elektrotechnischen Kommission (IEC) zusammen.
+%ENDDEEPL%
+</verbatim>
+
+All available languages can be listed using the =%DEEPL_LANGUAGES= macro:
+
+<verbatim>
+%DEEPL_LANGUAGES{
+   format="   1 $langname ($langtag)"
+   separator="$n"
+}%
+</verbatim>
+
+---++ Parameters
+
+The =%DEEPL= and =%STARTDEEPL= macros can be parametrized using:
+
+   * source_lang 
+   * target_lang 
+   * context
+   * split_sentences 
+   * preserve_formatting 
+   * formality 
+   * glossary_id
+   * tag_handling
+   * outline_detection
+   * non_splitting_tags
+   * splitting_tags
+   * ignore_tags
+
+See https://www.deepl.com/de/docs-api/translate-text/translate-text for an explanation.
+
+---++ Inplace translations
+
+Your html text may have a =lang= attribute. This will automatically add a "Translate" button underneath
+to make the above text translatable. Example:
+
+<verbatim>
+<div lang="en">
+  From today until Saturday we are at the GET Nord in Hamburg. The fair is the
+  industry meeting point of the north and the trade fair for electrical, sanitary
+  and heating air conditioning.
+</div>
+
+%JQREQUIRE{"deepl"}% 
+</verbatim>
+
+---++ !JavaScript API
+
+To integrate translations into your user interface you may also use the =Deepl= jQuery module. 
+
+<verbatim>
+*Label:*
+<input type="text" class="foswikiTextField" size="100" name="TopicTitle" id="test5" value="this is a test" />
+<a href="#" class="jqDeepl" data-source="#test5" data-source-lang="en" data-target-lang="de">Translate</a>
+
+*Textarea:*
+<textarea class="foswikiTextArea" rows="10" cols="100" id="testarea5">
+This is a test
+</textarea>
+<a href="#" class="jqDeepl" data-source="#testarea5" data-source-lang="en" data-target-lang="de">Translate</a>
+%JQREQUIRE{"deepl"}%
+</verbatim>
+
+When clicking on a =jqDeepl= link will translate a input or textarea be translated according to the parameters stored in HTML5 data attributes.
+
+The =Deepl= jQuery module will export two functions:
+
+   * =$(&lt;selector>).deepl(&lt;opts>)=: adds a translation controller to the given element
+   * =$(&lt;selector>).deelpTranslatable(&lt;opts>)=: adds an in-place user interface to translate a text fragment
+
+---++ Installation Instructions
+%$INSTALL_INSTRUCTIONS%
+
+---++ Dependencies
+%$DEPENDENCIES%
+
+---++ Change History
+
+%TABLE{columnwidths="7em" tablewidth="100%"}%
+|  31 Jan 2024 | initial release |
+
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Michael Daum"}%
+%META:FIELD{name="Version" title="Version" value="%25$VERSION%25"}%
+%META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/%25$ROOTMODULE%25"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2021-2024, Michael Daum, All Rights Reserved"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Home" title="Home" value="http://foswiki.org/Extensions/%25$ROOTMODULE%25"}%
+%META:FIELD{name="Support" title="Support" value="http://foswiki.org/Support/%25$ROOTMODULE%25"}%

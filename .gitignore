@@ -1,0 +1,10 @@
+/DeeplPlugin_installer
+/DeeplPlugin_installer.pl
+/DeeplPlugin.md5
+/DeeplPlugin.sha1
+/DeeplPlugin.tgz
+/DeeplPlugin.txt
+/DeeplPlugin.zip
+pub/System/DeeplPlugin/deepl.js
+pub/System/DeeplPlugin/deepl.js.gz
+*,v

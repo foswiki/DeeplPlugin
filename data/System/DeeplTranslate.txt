@@ -1,0 +1,92 @@
+%META:TOPICINFO{author="micha" comment="reprev" date="1696944191" format="1.1" reprev="5" version="5"}%
+%META:TOPICPARENT{name="WebHome"}%
+---+!! %TOPIC%
+
+%BUTTON{
+   "%TRANSLATE{"Terms of use ..." de="Nutzungsbedingingen ..."}%" 
+   class="jqTwisty simple"
+   icon="fa-legal"
+}%
+<div>
+
+%TRANSLATE{
+"As data is transferred to !DeepL SE when using the !DeepL Translate Tool, the following principles must be observed:
+   * No personal data (names etc.) may be included in the inserted texts.
+   * No trade or business secrets or otherwise confidential or sensitive data, neither of the company nor of third parties (e.g. business partners), may be included in the inserted texts.
+
+Furthermore, the applicable legal and contractual requirements must be observed as well as the current regulations of !DeepL SE, in particular the [[https://www.deepl.com/de/pro-license/][Terms and conditions]] and the [[https://www.deepl.com/en/privacy][Privacy Policy]]."
+de="Da bei der Nutzung des !DeepL Translate Tool eine Datenübermittlung an !DeepL SE erfolgt, sind die folgenden Grundsätze zu beachten:
+   * Es dürfen keine personenbezogenen Daten (Namen etc.) in den eingefügten Texten enthalten sein.
+   * Es dürfen keine Betriebs- oder Geschäftsgeheimnisse oder anderweitig geheimhaltungsbedürftige oder sensible Daten, weder des Unternehmens noch von Dritten (z. B. Geschäftspartnern), in den eingefügten Texten einhalten sein.
+
+Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalten sowie die aktuellen Regelungen der !DeepL SE, insbesondere die [[https://www.deepl.com/de/pro-license/][Nutzungsbedingungen]] und die [[https://www.deepl.com/de/privacy/][Datenschutzerklärung]], zu beachten."
+}%
+</div>
+
+<div class="foswikiErrorMessage %IF{"context DeeplPluginEnabled" then="foswikiHidden"}%">
+%MAKETEXT{"Sorry, the DeeplPlugin is not activated on this site."}%
+</div>
+<div class="foswikiFormSteps jqDeepl %IF{"not context DeeplPluginEnabled" then="foswikiHidden"}%"  data-source="#source" data-target="#target" data-source-lang="#sourceLang" data-target-lang="#targetLang" data-auto-submit="1500" data-swapper=".swapper">
+<div class="foswikiFormStep">
+<h2>%MAKETEXT{"From"}%</h2> 
+<select id="sourceLang">
+   <option value=''>&nbsp;</option>
+   %DEEPL_LANGUAGES{
+     format="<option value='$code' $percntIF{\"'$code'='%URLPARAM{"source" default="%LANGUAGE%"}%'\" then=\"selected\"}$percnt>$name</option>"
+     separator="$n  "
+     sort="name"
+   }%
+</select>
+<textarea id="source" placeholder="%MAKETEXT{"Insert text here"}%"></textarea>
+</div>
+<a class="swapper">%JQICON{"fa-exchange"}%</a>
+<div class="foswikiFormStep">
+<h2>%MAKETEXT{"To"}%</h2> 
+<select id="targetLang">
+   <option value=''>&nbsp;</option>
+   %DEEPL_LANGUAGES{
+     format="<option value='$code' $percntIF{\"'$code'='%URLPARAM{"target" default="en"}%'\" then=\"selected\"}$percnt>$name</option>"
+     separator="$n  "
+     sort="name"
+   }%
+</select>
+<textarea id="target"></textarea>
+</div>
+</div>
+%JQREQUIRE{"deepl, jqtwisty" warn="off"}%<!-- -->
+<style>
+.jqDeepl {
+   display:flex;
+   align-items:stretch;
+   align-content:stretch;
+}
+.jqDeepl h2 {
+  display:inline-block;
+}
+.jqDeepl .foswikiFormStep {
+   flex-grow:1;
+}
+.jqDeepl select {
+   margin-bottom:0.5em;
+}
+.jqDeepl textarea {
+   width:100%;
+   height:30em;
+}
+.jqDeepl .foswikiFormStep {
+   margin-bottom:1em;
+}
+.jqDeepl .swapper {
+   flex-grow:0;
+   align-self:center;
+   text-decoration:none;
+   margin:0 1em 5em;
+}
+</style>
+
+%META:TOPICMOVED{by="micha" date="1633241531" from="System.DeeplTool" to="System.DeeplTranslate"}%
+%META:PREFERENCE{name="TOPICTITLE" title="TOPICTITLE" type="Local" value="DeepL Translate"}%
+%META:PREFERENCE{name="DISPLAYREVISIONINFO" title="DISPLAYREVISIONINFO" type="Local" value="off"}%
+%META:PREFERENCE{name="NATSKIN_SIDEBAR" title="NATSKIN_SIDEBAR" type="Local" value="off"}%
+%META:PREFERENCE{name="DISPLAYTOPICTITLE" title="DISPLAYTOPICTITLE" type="Local" value="off"}%
+%META:PREFERENCE{name="NATEDIT_PURIFY" title="NATEDIT_PURIFY" type="Set" value="off"}%
