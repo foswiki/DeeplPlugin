@@ -30,7 +30,7 @@ use Foswiki::Func ();
 use Foswiki::Plugins::JQueryPlugin ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '1.00';
+our $VERSION = '1.02';
 our $RELEASE = '%$RELEASE%';
 our $SHORTDESCRIPTION = 'Deepl translation service for Foswiki';
 our $LICENSECODE = '%$LICENSECODE%';
@@ -90,6 +90,7 @@ automatically called during the core initialization process
 =cut
 
 sub finishPlugin {
+  $core->finish() if defined $core;
   undef $core;
 }
 

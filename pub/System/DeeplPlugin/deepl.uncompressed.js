@@ -1,14 +1,14 @@
 /*
  * jQuery deepl plugin
  *
- * Copyright (c) 2021-2023 Michael Daum http://michaeldaumconsulting.com
+ * Copyright (c) 2021-2024 Michael Daum http://michaeldaumconsulting.com
  *
  * Licensed under the GPL license http://www.gnu.org/licenses/gpl.html
  *
  */
 
 "use strict";
-(function($, window, document) {
+(function($) {
 
   // default options
   var defaults = {
@@ -272,16 +272,31 @@
   DeeplTranslatable.prototype.init = function() {
     var self = this;
 
-    self.lang = self.elem.prop("lang");
-           
-    if (self.lang !== navigator.language) {
-      //console.log("found translatable area. lang=",self.lang);
+    self.sourceLang = self.elem.prop("lang");
+    self.documentLang = $("html").prop("lang");
+    self.browserLang = navigator.language;
+
+    //console.log("sourceLang=",self.sourceLang,"documentLang=",self.documentLang,"browserLang=",self.browserLang);
+
+    if (self.sourceLang === '') {
+      return;
+    }
+
+    if (self.sourceLang !== self.documentLang) {
+      self.targetLang = self.documentLang;
+    } else if (self.sourceLang !== self.browserLang) {
+      self.targetLang = self.browserLang;
+    }
+    //console.log("targetLang=",self.targetLang);
+
+    if (self.targetLang) {
+      //console.log("found translatable area:",self.elem[0]);
          
       self.id = "translatable_"+foswiki.getUniqueID();
       self.elem.wrapInner("<div class='jqDeeplText' />");
       self.elem.find(".jqDeeplText").prop("id", self.id).css("margin-bottom", "1em");
          
-      self.deeplButton = $(`<a href="#" class="jqDeepl i18n foswikiGrayText" data-source="#${self.id}" data-target-lang="${navigator.language}">Translate</a>`)
+      self.deeplButton = $(`<a href="#" class="jqDeepl i18n foswikiGrayText" data-source="#${self.id}" data-target-lang="${self.targetLang}">Translate</a>`)
         .appendTo(self.elem);
             
       self.undoButton = $('<a href="#" class="i18n foswikiGrayText" style="display:none">Show original</a>')
@@ -327,4 +342,4 @@
     $(this).deeplTranslatable();
   });
 
-})(jQuery, window, document);
+})(jQuery);

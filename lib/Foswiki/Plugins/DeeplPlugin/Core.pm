@@ -88,13 +88,13 @@ sub new {
 
 =begin TML
 
----++ ObjectMethod DESTROY()
+---++ ObjectMethod finish()
 
 makes sure all sub-objects are deconstructed as well
 
 =cut
 
-sub DESTROY {
+sub finish {
   my $this = shift;
 
   undef $this->{_ua};
@@ -284,6 +284,8 @@ sub translate {
   }
 
   $params->{target_lang} = $targetLang;
+  $params->{"preserve_formatting"} //= 1;
+  $params->{"split_sentences"} //= 1;
 
   my $url = $Foswiki::cfg{DeeplPlugin}{APIUrl} || 'https://api-free.deepl.com/v2';
   $url =~ s/\/+$//;
