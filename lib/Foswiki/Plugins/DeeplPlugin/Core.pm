@@ -38,7 +38,6 @@ use constant TRACE => 0; # toggle me
 #use Data::Dump qw(dump);
 
 our %LANGUAGE_MAPPING = (
-  "zh-cn" => "zh",
   "zh" => "zh-cn",
 );
 
@@ -560,6 +559,8 @@ sub _mapLang {
 
   return unless $lang;
   $lang = lc($lang);
+
+  $lang =~ s/\-.*$//; # strip off the subclassification of the language, e.g. de-DE -> de
 
   return $LANGUAGE_MAPPING{$lang} // $lang;
 }

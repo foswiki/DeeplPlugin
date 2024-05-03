@@ -274,7 +274,7 @@
 
     self.sourceLang = self.elem.prop("lang");
     self.documentLang = $("html").prop("lang");
-    self.browserLang = navigator.language;
+    self.browserLang = navigator.language.replace(/\-.*$/, '');
 
     //console.log("sourceLang=",self.sourceLang,"documentLang=",self.documentLang,"browserLang=",self.browserLang);
 

@@ -30,7 +30,7 @@ use Foswiki::Func ();
 use Foswiki::Plugins::JQueryPlugin ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 our $RELEASE = '%$RELEASE%';
 our $SHORTDESCRIPTION = 'Deepl translation service for Foswiki';
 our $LICENSECODE = '%$LICENSECODE%';

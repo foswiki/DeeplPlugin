@@ -126,6 +126,7 @@ The =Deepl= jQuery module will export two functions:
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  02 May 2024 | normalize locales and language tags |
 |  29 Apr 2024 | better detection of user vs browser vs document language when offering in-place translations |
 |  31 Jan 2024 | initial release |
 
