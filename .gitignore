@@ -7,4 +7,6 @@
 /DeeplPlugin.zip
 pub/System/DeeplPlugin/deepl.js
 pub/System/DeeplPlugin/deepl.js.gz
+pub/**/attic
+locale/**/*~
 *,v

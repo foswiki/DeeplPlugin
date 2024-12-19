@@ -1,5 +1,5 @@
 /*
- * jQuery deepl plugin
+ * deepl core
  *
  * Copyright (c) 2021-2024 Michael Daum http://michaeldaumconsulting.com
  *
@@ -17,9 +17,9 @@
     swapper: null,
     sourceLang: '',
     targetLang: '',
+    formality: '',
     autoSubmit: null
   };
-
 
   // utils
   function _throttle(callback, delay) {
@@ -90,6 +90,9 @@
     if (self.opts.targetLang.length !== 2) {
       self.targetLangElem = $(self.opts.targetLang);
     }
+    if (self.opts.formality.length !== 2) {
+      self.formalityElem = $(self.opts.formality);
+    }
 
     if (self.sourceElem.length == 0) {
       throw("source not found at "+self.opts.source);
@@ -113,6 +116,12 @@
       
       if (self.targetLangElem) {
         self.targetLangElem.on("change", function() {
+          self.translate();
+        });
+      }
+
+      if (self.formalityElem) {
+        self.formalityElem.on("change", function() {
           self.translate();
         });
       }
@@ -169,6 +178,7 @@
         text = _getText(self.sourceElem),
         sourceLang = self.getSourceLang(),
         targetLang = self.getTargetLang(),
+        formality = self.getFormality(),
         fingerPrint,
         dfd = $.Deferred();
 
@@ -177,7 +187,8 @@
       return dfd.resolve().promise();
     }
 
-    fingerPrint = sourceLang+"::"+targetLang+"::"+text;
+    fingerPrint = sourceLang+"::"+targetLang+"::"+formality+"::"+text;
+
     if (self._prevFingerPrint === fingerPrint) {
       console.log("not translating the same thing twice");
       return dfd.resolve().promise();
@@ -198,6 +209,7 @@
           text: text,
           source_lang: sourceLang,
           target_lang: targetLang,
+          formality: formality,
           tag_handling: 'html',
           ignore_tags: 'img'
         },
@@ -245,6 +257,16 @@
     return self.opts.targetLang;
   };
 
+  Deepl.prototype.getFormality = function() {
+    var self = this;
+
+    if (self.formalityElem) {
+      return self.formalityElem.val();
+    }
+
+    return "default";
+  };
+
   // messaging
   Deepl.prototype.showMessage = function(type, msg, title) {
     $.pnotify({
@@ -262,59 +284,6 @@
     $.pnotify_remove_all();
   };
 
-  function DeeplTranslatable(elem, opts) {
-    var self = this;
-
-    self.elem = $(elem); 
-    self.init(); 
-  }
-
-  DeeplTranslatable.prototype.init = function() {
-    var self = this;
-
-    self.sourceLang = self.elem.prop("lang");
-    self.documentLang = $("html").prop("lang");
-    self.browserLang = navigator.language.replace(/\-.*$/, '');
-
-    //console.log("sourceLang=",self.sourceLang,"documentLang=",self.documentLang,"browserLang=",self.browserLang);
-
-    if (self.sourceLang === '') {
-      return;
-    }
-
-    if (self.sourceLang !== self.documentLang) {
-      self.targetLang = self.documentLang;
-    } else if (self.sourceLang !== self.browserLang) {
-      self.targetLang = self.browserLang;
-    }
-    //console.log("targetLang=",self.targetLang);
-
-    if (self.targetLang) {
-      //console.log("found translatable area:",self.elem[0]);
-         
-      self.id = "translatable_"+foswiki.getUniqueID();
-      self.elem.wrapInner("<div class='jqDeeplText' />");
-      self.elem.find(".jqDeeplText").prop("id", self.id).css("margin-bottom", "1em");
-         
-      self.deeplButton = $(`<a href="#" class="jqDeepl i18n foswikiGrayText" data-source="#${self.id}" data-target-lang="${self.targetLang}">Translate</a>`)
-        .appendTo(self.elem);
-            
-      self.undoButton = $('<a href="#" class="i18n foswikiGrayText" style="display:none">Show original</a>')
-        .appendTo(self.elem);
-            
-      self.deeplButton.on("success", function() {
-        self.deeplButton.hide();
-        self.undoButton.show();
-      });
-            
-      self.undoButton.on("click", function() {
-        self.deeplButton.data("deepl").reset();
-        self.deeplButton.show();
-        self.undoButton.hide();
-        return false;
-      });
-    }
-  };
 
   // make it a jquery plugin
   $.fn.deepl = function (opts) { 
@@ -324,22 +293,9 @@
       } 
     }); 
   };
-  $.fn.deeplTranslatable = function (opts) { 
-    return this.each(function () { 
-      if (!$.data(this, "deeplTranslatable")) { 
-        $.data(this, "deeplTranslatable", new DeeplTranslatable(this, opts)); 
-      } 
-    }); 
-  };
-
   // Enable declarative widget instanziation 
   $(".jqDeepl").livequery(function() {
     $(this).deepl();
-  });
-
-  // deepl translatable text blocks
-  $("div[lang]").livequery(function() {
-    $(this).deeplTranslatable();
   });
 
 })(jQuery);

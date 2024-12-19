@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1706703795" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1734633104" format="1.1" version="1"}%
 ---+!! %TOPIC%
 %FORMFIELD{"Description"}%
 
@@ -65,6 +65,7 @@ The =%DEEPL= and =%STARTDEEPL= macros can be parametrized using:
 
    * source_lang 
    * target_lang 
+   * formality 
    * context
    * split_sentences 
    * preserve_formatting 
@@ -126,6 +127,8 @@ The =Deepl= jQuery module will export two functions:
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  19 Dec 2024 | add support to translate office documents |
+|  02 Oct 2024 | added support for formality |
 |  02 May 2024 | normalize locales and language tags |
 |  29 Apr 2024 | better detection of user vs browser vs document language when offering in-place translations |
 |  31 Jan 2024 | initial release |

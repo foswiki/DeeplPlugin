@@ -30,7 +30,7 @@ use Foswiki::Func ();
 use Foswiki::Plugins::JQueryPlugin ();
 use Foswiki::Contrib::JsonRpcContrib ();
 
-our $VERSION = '1.03';
+our $VERSION = '2.00';
 our $RELEASE = '%$RELEASE%';
 our $SHORTDESCRIPTION = 'Deepl translation service for Foswiki';
 our $LICENSECODE = '%$LICENSECODE%';
@@ -55,6 +55,22 @@ sub initPlugin {
   Foswiki::Contrib::JsonRpcContrib::registerMethod("DeeplPlugin", "translate", sub {
     return getCore()->jsonRpcTranslate(@_);
   });
+
+  Foswiki::Contrib::JsonRpcContrib::registerMethod("DeeplPlugin", "upload", sub {
+    return getCore()->jsonRpcUpload(@_);
+  });
+
+  Foswiki::Contrib::JsonRpcContrib::registerMethod("DeeplPlugin", "status", sub {
+    return getCore()->jsonRpcStatus(@_);
+  });
+
+  Foswiki::Func::registerRESTHandler('download', sub { 
+      return getCore()->restDownload(@_);
+    },
+    authenticate => 1,
+    validate => 1,
+    http_allow => 'GET,POST',
+  );
 
   Foswiki::Plugins::JQueryPlugin::registerPlugin('Deepl', 'Foswiki::Plugins::DeeplPlugin::JQUERY');
 

@@ -46,9 +46,11 @@ use constant DEEPL_PARAMS => qw(
   source_lang 
   target_lang 
   context
+  show_billed_characters
   split_sentences 
   preserve_formatting 
   formality 
+  model_type
   glossary_id
   tag_handling
   outline_detection
@@ -183,10 +185,6 @@ JSON-RPC implementation of the =translate= endpoint
 sub jsonRpcTranslate {
   my ($this, $session, $request) = @_;
 
-  my $wikiName = Foswiki::Func::getWikiName();
-  my $web = $request->param("web") || $this->{session}{webName};
-  my $topic = $request->param("topic") || $this->{session}{topicName};
-
   my $result = '';
   my $error;
   my %params = ();
@@ -212,6 +210,127 @@ sub jsonRpcTranslate {
   throw Error::Simple($error) if $error;
 
   return $result;
+}
+
+=begin TML
+
+---++ ObjectMethod jsonRpcUpload($session, $request) 
+
+JSON-RPC implementation of the =upload= endpoint
+
+=cut
+
+sub jsonRpcUpload {
+  my ($this, $session, $request) = @_;
+
+  my $result = '';
+  my $error;
+  my %params = ();
+
+  foreach my $key (DEEPL_PARAMS) {
+    my $val = $request->param($key);
+    next unless defined $val;
+    $params{$key} = $val;
+  }
+
+  $params{filename} = $request->param("file"); 
+  
+  throw Error::Simple("no file parameter") unless defined $params{filename};
+  throw Error::Simple("no target_lang parameter") unless defined $params{target_lang};
+
+  my $uploads = $request->uploads();
+  my $upload = $uploads->{$params{filename}};
+
+  try {
+    $result = $this->upload($upload, \%params);
+  } catch Error with {
+    $error = shift;
+    $error =~ s/ at .*$//g;
+    $error =~ s/\s+$//g;
+    $error =~ s/^\s+//g;
+  };
+
+  throw Error::Simple($error) if $error;
+
+  return $result;
+}
+
+=begin TML
+
+---++ ObjectMethod jsonRpcStatus($session, $request) 
+
+JSON-RPC implementation for the =status= endpoint
+
+=cut
+
+sub jsonRpcStatus {
+  my ($this, $session, $request) = @_;
+
+  my $result = '';
+  my $error;
+  my $key = $request->param("document_key");
+  my $id = $request->param("document_id");
+
+  throw Error::Simple("no document_key parameter") unless defined $key;
+  throw Error::Simple("no document_id parameter") unless defined $id;
+
+  try {
+    $result = $this->status($id, $key);
+  } catch Error with {
+    $error = shift;
+    $error =~ s/ at .*$//g;
+    $error =~ s/\s+$//g;
+    $error =~ s/^\s+//g;
+  };
+
+  throw Error::Simple($error) if $error;
+
+  return $result;
+}
+
+=begin TML
+
+---++ ObjectMethod restDownload($session) 
+
+REST handler for the =download= endpoint
+
+=cut
+
+sub restDownload {
+  my ($this, $session) = @_;
+
+  my $request = Foswiki::Func::getRequestObject();
+
+  my $error;
+  my $key = $request->param("document_key");
+  my $id = $request->param("document_id");
+
+  throw Error::Simple("no document_key parameter") unless defined $key;
+  throw Error::Simple("no document_id parameter") unless defined $id;
+
+  my $data = '';
+  my $dispo = '';
+
+  try {
+    ($dispo, $data) = $this->download($id, $key);
+  } catch Error with {
+    $error = shift;
+    $error =~ s/ at .*$//g;
+    $error =~ s/\s+$//g;
+    $error =~ s/^\s+//g;
+  };
+
+  my $response = $session->{response};
+
+  if ($error) {
+    $response->header(-status => 404);
+    return $error;
+  }
+
+  $response->header(-Content_Disposition => $dispo) if $dispo;
+  $response->body($data);
+
+  return "";
 }
 
 =begin TML
@@ -255,7 +374,8 @@ the following keys:
    * context
    * split_sentences 
    * preserve_formatting 
-   * formality 
+   * formality: default, more, less, prefer_more, prefer_less
+   * model_type: quality_optimized, prefer_quality_optimized, latency_optimized
    * glossary_id
    * tag_handling
    * outline_detection
@@ -313,20 +433,128 @@ sub translate {
   $form{auth_key} = $Foswiki::cfg{DeeplPlugin}{APIKey};
 
   my $response = $this->ua->post($url, 
-    "Content-Type" => "application/x-www-form-urlencoded",
+    Content_Type => "application/x-www-form-urlencoded",
     Content => \%form
   );
 
   my $content = Encode::decode_utf8($response->content()); # SMELL: manual decoding as there is no content-encoding in response. 
   #_writeDebug("content=$content");
-
-  throw Error::Simple($content) if $response->is_error;
-
   $content = $this->json->decode($content);
+
+  throw Error::Simple($content->{message}) if $response->is_error;
+
   $translation = $content->{translations}[0]{text};
   $this->getCache->set($key, $translation);
 
   return $translation;
+}
+
+=begin TML
+
+---++ ObjectMethod upload($info, $params) 
+
+=cut
+
+sub upload {
+  my ($this, $upload, $params) = @_;
+
+  my $url = $Foswiki::cfg{DeeplPlugin}{APIUrl} || 'https://api-free.deepl.com/v2';
+  $url =~ s/\/+$//;
+  $url .= "/document";
+
+  _writeDebug("url=$url");
+
+  my @form = ();
+  foreach my $key (DEEPL_PARAMS) {
+    my $val = $params->{$key};
+    push @form, $key => $val if defined $val;
+  }
+
+  push @form, auth_key => $Foswiki::cfg{DeeplPlugin}{APIKey};
+  push @form, filename => $params->{filename};
+  push @form, file => [$upload->{tmpname}];
+
+  my $response = $this->ua->post($url, 
+    Content_Type => "multipart/form-data",
+    Content => \@form
+  );
+  
+  my $content = Encode::decode_utf8($response->content()); # SMELL: manual decoding as there is no content-encoding in response. 
+  #_writeDebug("content=$content");
+  $content = $this->json->decode($content);
+
+  throw Error::Simple($content->{message}) if $response->is_error;
+  return $content;
+}
+
+=begin TML
+
+---++ ObjectMethod status($id, $key) 
+
+=cut
+
+sub status {
+  my ($this, $id, $key) = @_;
+
+  my $url = $Foswiki::cfg{DeeplPlugin}{APIUrl} || 'https://api-free.deepl.com/v2';
+  $url =~ s/\/+$//;
+  $url .= "/document/$id";
+
+  my $form = {
+    auth_key => $Foswiki::cfg{DeeplPlugin}{APIKey},
+    document_key => $key
+  };
+
+  my $response = $this->ua->post($url, 
+    Content_Type => "application/x-www-form-urlencoded",
+    Content => $form
+  );
+
+  my $content = Encode::decode_utf8($response->content()); # SMELL: manual decoding as there is no content-encoding in response. 
+  #_writeDebug("content=$content");
+  $content = $this->json->decode($content);
+
+  throw Error::Simple($content->{message}) if $response->is_error;
+
+  return $content;
+}
+
+=begin TML
+
+---++ ObjectMethod download($id, $key) -> $data
+
+=cut
+
+sub download {
+  my ($this, $id, $key) = @_;
+
+  my $url = $Foswiki::cfg{DeeplPlugin}{APIUrl} || 'https://api-free.deepl.com/v2';
+  $url =~ s/\/+$//;
+  $url .= "/document/$id/result";
+
+  my $form = {
+    auth_key => $Foswiki::cfg{DeeplPlugin}{APIKey},
+    document_key => $key
+  };
+
+  my $response = $this->ua->post($url, 
+    Content_Type => "application/x-www-form-urlencoded",
+    Content => $form
+  );
+
+  if ($response->is_error) {
+    my $content = Encode::decode_utf8($response->content()); # SMELL: manual decoding as there is no content-encoding in response. 
+    $content = $this->json->decode($content);
+    throw Error::Simple($content->{message});
+  }
+
+  my $dispo = $response->header("content-disposition");
+
+  #if ($dispo =~ /(filename=.*?);/) {
+  #  $dispo = "attachment; $1";
+  #}
+
+  return wantarray ? ($dispo, $response->decoded_content()) : $response->decoded_content;
 }
 
 =begin TML
@@ -506,7 +734,7 @@ sub ua {
   unless (defined $this->{_ua}) {
     $this->{_ua} //= LWP::UserAgent->new(
       # see https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome
-      agent => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+      agent => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
       protocols_allowed => ['http', 'https'],
       timeout => 10
     );

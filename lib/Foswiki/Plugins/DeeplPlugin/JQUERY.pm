@@ -35,10 +35,9 @@ sub new {
       version => $Foswiki::Plugins::DeeplPlugin::VERSION,
       author => 'Michael Daum',
       homepage => 'http://foswiki.org/Extensions/DeeplPlugin',
-      puburl => '%PUBURLPATH%/%SYSTEMWEB%/DeeplPlugin',
+      puburl => '%PUBURLPATH%/%SYSTEMWEB%/DeeplPlugin/build',
       documentation => '%SYSTEMWEB%.DeeplPlugin',
-      javascript => ['deepl.js'],
-      #css => ['deepl.css'],
+      javascript => ['pkg.js'],
       dependencies => ['jsonrpc', 'blockui', 'pnotify'],
     ),
     $class

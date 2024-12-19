@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/System/DeeplTranslate.txt:37 data/System/DeeplTranslate.txt:80
+msgid "Formality"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:14 data/System/DeeplTranslate.txt:54
+msgid "From_Language"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:23
+msgid "Insert text here"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:6
+msgid "Sorry, the DeeplPlugin is not activated on this site."
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:136
+msgid "Terms of Use"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:27 data/System/DeeplTranslate.txt:67
+msgid "To_Language"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:48
+msgid "Translate Document"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:11
+msgid "Translate Text"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:92
+msgid "Translate a Document"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:39 data/System/DeeplTranslate.txt:83
+msgid "default"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:40 data/System/DeeplTranslate.txt:84
+msgid "formal"
+msgstr ""
+
+#: data/System/DeeplTranslate.txt:41 data/System/DeeplTranslate.txt:85
+msgid "informal"
+msgstr ""

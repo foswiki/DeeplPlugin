@@ -1,35 +1,18 @@
-%META:TOPICINFO{author="micha" comment="reprev" date="1696944191" format="1.1" reprev="5" version="5"}%
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1734633104" format="1.1"  version="1"}%
 %META:TOPICPARENT{name="WebHome"}%
 ---+!! %TOPIC%
 
-%BUTTON{
-   "%TRANSLATE{"Terms of use ..." de="Nutzungsbedingingen ..."}%" 
-   class="jqTwisty simple"
-   icon="fa-legal"
-}%
-<div>
-
-%TRANSLATE{
-"As data is transferred to !DeepL SE when using the !DeepL Translate Tool, the following principles must be observed:
-   * No personal data (names etc.) may be included in the inserted texts.
-   * No trade or business secrets or otherwise confidential or sensitive data, neither of the company nor of third parties (e.g. business partners), may be included in the inserted texts.
-
-Furthermore, the applicable legal and contractual requirements must be observed as well as the current regulations of !DeepL SE, in particular the [[https://www.deepl.com/de/pro-license/][Terms and conditions]] and the [[https://www.deepl.com/en/privacy][Privacy Policy]]."
-de="Da bei der Nutzung des !DeepL Translate Tool eine Datenübermittlung an !DeepL SE erfolgt, sind die folgenden Grundsätze zu beachten:
-   * Es dürfen keine personenbezogenen Daten (Namen etc.) in den eingefügten Texten enthalten sein.
-   * Es dürfen keine Betriebs- oder Geschäftsgeheimnisse oder anderweitig geheimhaltungsbedürftige oder sensible Daten, weder des Unternehmens noch von Dritten (z. B. Geschäftspartnern), in den eingefügten Texten einhalten sein.
-
-Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalten sowie die aktuellen Regelungen der !DeepL SE, insbesondere die [[https://www.deepl.com/de/pro-license/][Nutzungsbedingungen]] und die [[https://www.deepl.com/de/privacy/][Datenschutzerklärung]], zu beachten."
-}%
-</div>
-
 <div class="foswikiErrorMessage %IF{"context DeeplPluginEnabled" then="foswikiHidden"}%">
-%MAKETEXT{"Sorry, the DeeplPlugin is not activated on this site."}%
+%TRANSLATE{"Sorry, the DeeplPlugin is not activated on this site."}%
 </div>
-<div class="foswikiFormSteps jqDeepl %IF{"not context DeeplPluginEnabled" then="foswikiHidden"}%"  data-source="#source" data-target="#target" data-source-lang="#sourceLang" data-target-lang="#targetLang" data-auto-submit="1500" data-swapper=".swapper">
+
+<div class="%IF{"not context DeeplPluginEnabled" then="foswikiHidden"}%">
+%TABPANE{class="plain" remember="on"}%
+%TAB{"%TRANSLATE{"Translate Text"}%"}%
+<div class="foswikiFormSteps jqDeepl"  data-source="[name=source]" data-target="[name=target]" data-source-lang="#sourceLang1" data-target-lang="#targetLang1" data-formality="#formality1" data-auto-submit="1500" data-swapper=".swapper">
 <div class="foswikiFormStep">
-<h2>%MAKETEXT{"From"}%</h2> 
-<select id="sourceLang">
+<b>%TRANSLATE{"From_Language"}%</b> 
+<select name="sourceLang" id="sourceLang1">
    <option value=''>&nbsp;</option>
    %DEEPL_LANGUAGES{
      format="<option value='$code' $percntIF{\"'$code'='%URLPARAM{"source" default="%LANGUAGE%"}%'\" then=\"selected\"}$percnt>$name</option>"
@@ -37,12 +20,12 @@ Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalt
      sort="name"
    }%
 </select>
-<textarea id="source" placeholder="%MAKETEXT{"Insert text here"}%"></textarea>
+<textarea name="source" placeholder="%TRANSLATE{"Insert text here"}%"></textarea>
 </div>
 <a class="swapper">%JQICON{"fa-exchange"}%</a>
 <div class="foswikiFormStep">
-<h2>%MAKETEXT{"To"}%</h2> 
-<select id="targetLang">
+<b>%TRANSLATE{"To_Language"}%</b> 
+<select name="targetLang" id="targetLang1">
    <option value=''>&nbsp;</option>
    %DEEPL_LANGUAGES{
      format="<option value='$code' $percntIF{\"'$code'='%URLPARAM{"target" default="en"}%'\" then=\"selected\"}$percnt>$name</option>"
@@ -50,10 +33,72 @@ Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalt
      sort="name"
    }%
 </select>
-<textarea id="target"></textarea>
+<div class='foswikiRight'>
+<b>%TRANSLATE{"Formality"}%</b>
+<select name="formality" id="formality1">
+  <option value=''>%TRANSLATE{"default"}%</option>
+  <option value='prefer_more'>%TRANSLATE{"formal"}%</option>
+  <option value='prefer_less'>%TRANSLATE{"informal"}%</option>
+</select>
+</div>
+<textarea name="target"></textarea>
 </div>
 </div>
-%JQREQUIRE{"deepl, jqtwisty" warn="off"}%<!-- -->
+%ENDTAB%
+%TAB{"%TRANSLATE{"Translate Document"}%"}%
+<div class="foswikiFormSteps">
+<form action="%SCRIPTURLPATH{"jsonrpc"}%/DeeplPlugin/upload" method="post" enctype="multipart/form-data" class="jqDeeplDocument" data-auto-submit="true">
+<div class="foswikiFormStep">
+   <table class='foswikiLayoutTable'>
+      <tr>
+         <th><b>%TRANSLATE{"From_Language"}%</b></th>
+         <td>
+            <select name="source_lang">
+               <option value=''>&nbsp;</option>
+               %DEEPL_LANGUAGES{
+                  format="<option value='$code' $percntIF{\"'$code'='%URLPARAM{"source" default="%LANGUAGE%"}%'\" then=\"selected\"}$percnt>$name</option>"
+                  separator="$n  "
+                  sort="name"
+               }%
+            </select>
+         </td>
+      </tr>
+      <tr>
+         <th>%TRANSLATE{"To_Language"}%</th>
+         <td>
+           <select name="target_lang">
+              <option value=''>&nbsp;</option>
+              %DEEPL_LANGUAGES{
+                 format="<option value='$code' $percntIF{\"'$code'='%URLPARAM{"target" default="en"}%'\" then=\"selected\"}$percnt>$name</option>"
+                 separator="$n  "
+                 sort="name"
+              }%
+           </select>
+         </td>
+      </tr>
+      <tr>
+         <th>%TRANSLATE{"Formality"}%</th>
+         <td>
+            <select name="formality">
+               <option value=''>%TRANSLATE{"default"}%</option>
+               <option value='prefer_more'>%TRANSLATE{"formal"}%</option>
+               <option value='prefer_less'>%TRANSLATE{"informal"}%</option>
+            </select>
+         </td>
+      </tr>
+   </table>
+</div>
+<div class="foswikiFormStep">
+   %BUTTON{"%TRANSLATE{"Translate a Document"}%" icon="fa-cloud-upload" for="file"}%
+   <input type="file" name="file" id="file" class="foswikiHidden" />
+</div>
+</form>
+</div>
+%ENDTAB%
+%ENDTABPANE%
+</div>
+
+%JQREQUIRE{"deepl" warn="off"}%
 <style>
 .jqDeepl {
    display:flex;
@@ -65,9 +110,10 @@ Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalt
 }
 .jqDeepl .foswikiFormStep {
    flex-grow:1;
+   flex-basis:50%;
 }
-.jqDeepl select {
-   margin-bottom:0.5em;
+.jqDeepl textarea {
+   margin-top:0.5em;
 }
 .jqDeepl textarea {
    width:100%;
@@ -82,7 +128,25 @@ Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalt
    text-decoration:none;
    margin:0 1em 5em;
 }
+.jqDeeplDocument select {
+   width:15em;
+}
 </style>
+
+<h2 >%TRANSLATE{"Terms of Use"}%</h2>
+
+%TRANSLATE{
+"As data is transferred to !DeepL SE when using the !DeepL Translate Tool, the following principles must be observed:
+   * No personal data (names etc.) may be included in the inserted texts.
+   * No trade or business secrets or otherwise confidential or sensitive data, neither of the company nor of third parties (e.g. business partners), may be included in the inserted texts.
+
+Furthermore, the applicable legal and contractual requirements must be observed as well as the current regulations of !DeepL SE, in particular the [[https://www.deepl.com/de/pro-license/][Terms and conditions]] and the [[https://www.deepl.com/en/privacy][Privacy Policy]]."
+de="Da bei der Nutzung des !DeepL Translate Tool eine Datenübermittlung an !DeepL SE erfolgt, sind die folgenden Grundsätze zu beachten:
+   * Es dürfen keine personenbezogenen Daten (Namen etc.) in den eingefügten Texten enthalten sein.
+   * Es dürfen keine Betriebs- oder Geschäftsgeheimnisse oder anderweitig geheimhaltungsbedürftige oder sensible Daten, weder des Unternehmens noch von Dritten (z. B. Geschäftspartnern), in den eingefügten Texten einhalten sein.
+
+Im Übrigen sind die geltenden gesetzlichen und vertraglichen Vorgaben einzuhalten sowie die aktuellen Regelungen der !DeepL SE, insbesondere die [[https://www.deepl.com/de/pro-license/][Nutzungsbedingungen]] und die [[https://www.deepl.com/de/privacy/][Datenschutzerklärung]], zu beachten."
+}%
 
 %META:TOPICMOVED{by="micha" date="1633241531" from="System.DeeplTool" to="System.DeeplTranslate"}%
 %META:PREFERENCE{name="TOPICTITLE" title="TOPICTITLE" type="Local" value="DeepL Translate"}%
